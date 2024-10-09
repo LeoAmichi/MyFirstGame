@@ -59,7 +59,7 @@ global lifeSprite1, lifeSprite2, lifeSprite3
 global aux
 global auxBoss = 0
 global auxBossSpawn = 0
-global Bosslife = 10
+global Bosslife = 0
 global velocity = 2
 
 fundoFinal = LoadImage("End.png")
@@ -147,13 +147,14 @@ SetSpritePosition(enemy3, 2000, 2000)
 SetSpritePosition(enemy4, 2000, 2000)
 
 //Boss
-bossFinal = LoadImage("boss.png")
+bossFinal = LoadImage("boss2.png")
 global bossSprite
 bossSprite = createSprite(bossFinal)
-setSpriteSize(bossSprite, 160, 160)
-SetSpriteAnimation(bossSprite, 87, 100, 5)
-SetSpritePosition(bossSprite, 1300, 1200)
-PlaySprite(bossSprite, 5)
+SetSpriteAnimation(bossSprite, 88, 99, 12)
+//SetSpriteAnimation(bossSprite, 288, 160, 12)
+setSpriteSize(bossSprite, 150, 100)
+SetSpritePosition(bossSprite, 100, 100)
+PlaySprite(bossSprite, 9)
 
 
 //Inicio
@@ -169,12 +170,6 @@ SetSpriteSize(helpSprite, 230, 150)
 SetSpritePosition(helpSprite, 510, 450)
 SetSpriteSize(playSprite, 230, 150)
 SetSpritePosition(playSprite, 260, 450)
-
-stars = LoadImage("stars.png")
-starsSprite = CreateSprite(stars)
-SetSpriteSize(starsSprite, 200, 50)
-SetSpriteAnimation(starsSprite, 100, 30, 2)
-
 
 //Life
 life1 = LoadImage("life.png")
@@ -273,7 +268,9 @@ som = 0
 fundoF = 0
 global tempoAux = 0
 global tempoAux2 = 0
+global tempoAux3 = 0
 global tempo
+global tempoBoss = 0
 
 do
 	if(vidas = 0 and fundoF = 0)
@@ -341,23 +338,21 @@ do
 		SetSpriteVisible(helpSprite, 0)
 		tempo = GetSeconds() - tempoAux
 		tempoAux2 = getSeconds()
-		if(tempo >= 1)
+		
+		if(tempo >= 2)
 			tiro()
 			endif
-		movimento()
-		borda()
-		print(tempo)
-		if(tempo = 1)
+		if(tempo = 2)
 			if(getSpriteX(enemy1) > 1500 and getSpriteY(enemy1) > 1500)	
 				SetSpriteVisible(enemy1, 1)
-				spawn(enemy1, random(400,600), random(100, 200))
+				spawn(enemy1, random(400,600), random(50, 100))
 				endif
 			if(getSpriteX(enemy2) > 1500 and getSpriteY(enemy2) > 1500)
 				SetSpriteImage(enemy2,enemyDireita)
 				SetSpriteAnimation(enemy2, 180,170,3)
 				playSprite(enemy2, 5)
 				SetSpriteVisible(enemy2, 1)
-				spawn(enemy2, random(150, 250), random(300, 400))
+				spawn(enemy2, random(150, 250), random(200, 300))
 				
 				endif
 			if(getSpriteX(enemy3) > 1500 and getSpriteY(enemy3) > 1500)
@@ -365,8 +360,7 @@ do
 				SetSpriteAnimation(enemy3, 180,170,3)
 				playSprite(enemy3, 5)
 				SetSpriteVisible(enemy3, 1)
-				spawn(enemy3, random(700, 800), random(400, 500))
-				
+				spawn(enemy3, random(700, 800), random(300, 400))
 				endif
 				
 			if(getSpriteX(enemy4) > 1500 and getSpriteY(enemy4) > 1500)
@@ -374,7 +368,7 @@ do
 				SetSpriteAnimation(enemy4, 180,170,3)
 				playSprite(enemy4, 5)
 				SetSpriteVisible(enemy4, 1)
-				spawn(enemy4, random(400, 500), random(600,650))
+				spawn(enemy4, random(400, 500), random(600,700))
 				endif
 				
 			endif
@@ -386,12 +380,15 @@ do
 			mov(enemy2)
 			mov(enemy3)
 			mov(enemy4)
+			movimento()
+			borda()
 			life()
 			SpawnLife()
 			SpawnBoots()
 			SpawnGun()
+			
+			
 			BossOn()
-			print(pontosBoss)
 			endif
 			
 			
@@ -614,7 +611,7 @@ function respawn()
     endif
    
     
-    if( tempo > 2 and tempo = tempoInimigo2 + 2 and auxBoss = 0)  
+    if(tempo > 2 and tempo = tempoInimigo2 + 2 and auxBoss = 0)  
         SetSpritePosition(enemy2, random(150, 250), random(300, 400))
         tempoInimigo2 = 0
     endif
@@ -718,8 +715,8 @@ function SpawnLife()
 	endfunction
 
 function BossOn()
-	if(mod(tempo, 15) = 0 and tempo > 0)
-		BossLife = 10
+	if(mod(tempo, 10) = 0 and tempo > 0)
+		BossLife = 5
 		SetSpritePosition(enemy1, 2000, 2000)
 		SetSpritePosition(enemy2, 2000, 2000)
 		SetSpritePosition(enemy3, 2000, 2000)
@@ -744,25 +741,25 @@ function BossOn()
 			SetSpritePosition(BossSprite, 2000, 2000)
 			auxBoss = 0
 			auxBossSpawn = 0
-			SpawnEnemy()
+			
+			tempoAux3  = tempo
 			endif
 		endif
-		
 	endfunction
 	
 function SpawnEnemy()
-	 if(pontosBoss = 1)
+	if(GetSpriteCollision(animacao1Sprite, bootsSprite))
 		 spawn(enemy1, random(400,600), random(100, 200))
 		 spawn(enemy2, random(150, 250), random(300, 400))
 		 spawn(enemy3, random(700, 800), random(400, 500))
 		 spawn(enemy4, random(400, 500), random(600,650))
-		 endif
+		endif
 	endfunction
 
 function SpawnBoots()
 if(BossLife = 0 and auxBoots = 0 and PontosBoss = 1)
 		SetSpriteVisible(bootsSprite, 1)
-		SetSpritePosition(bootsSprite, random(400, 800), random(300,600))
+		SetSpritePosition(bootsSprite, 512, 320)
 		auxBoots = 1
 		endif
 if(GetSpriteCollision(animacao1Sprite, bootsSprite))
@@ -774,7 +771,7 @@ endfunction
 function SpawnGun()
 if(BossLife = 0 and auxGun = 0 and PontosBoss = 2)
 	SetSpriteVisible(gunSprite, 1)
-	SetSpritePosition(gunSprite, random(400, 800), random(300,600))
+	SetSpritePosition(gunSprite, 512, 324)
 	auxGun = 1
 	endif
 if(GetSpriteCollision(animacao1Sprite, gunSprite))
